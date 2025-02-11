@@ -2,7 +2,6 @@ import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
 
-// Add this debug log
 console.log("API Key available:", !!process.env.OPENAI_API_KEY);
 
 const openai = new OpenAI({
@@ -14,7 +13,6 @@ export async function POST(request: Request) {
 
     const { type, audience, instructions } = await request.json();
 
-    // Build the prompt based on the parameters
     let prompt = `Generate a ${type} joke`;
     if (audience) {
       prompt += ` suitable for ${audience === 'child' ? 'children' : audience === 'teen' ? 'teenagers' : 'adults'}`;
@@ -34,7 +32,7 @@ export async function POST(request: Request) {
           content: prompt,
         },
       ],
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
     });
 
     const joke = completion.choices[0].message.content;

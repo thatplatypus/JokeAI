@@ -25,8 +25,8 @@ export function Header() {
             asChild
           >
             <Link href="/">
-              <HomeIcon className="h-4 w-4 mr-2" />
-              <span className="sm:inline hidden">Generate</span>
+              <HomeIcon className="h-4 w-4" />
+              <span className="sm:inline hidden ml-2">Generate</span>
             </Link>
           </Button>
           
@@ -39,8 +39,8 @@ export function Header() {
             asChild
           >
             <Link href="/recent">
-              <ClockIcon className="h-4 w-4 mr-2" />
-              <span className="sm:inline hidden">Recent</span>
+              <ClockIcon className="h-4 w-4" />
+              <span className="sm:inline hidden ml-2">Recent</span>
             </Link>
           </Button>
 
