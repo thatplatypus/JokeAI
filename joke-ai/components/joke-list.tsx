@@ -6,16 +6,14 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { Joke } from "@/types/joke";
 
-interface Joke {
-  id: string;
-  content: string;
-  type: string;
-  audience: string;
-  createdAt: string;
+interface JokesResponse {
+  jokes: Joke[];
+  nextPage: number | null;
 }
 
-async function fetchJokes({ pageParam = 1 }) {
+async function fetchJokes({ pageParam }: { pageParam: number }): Promise<JokesResponse> {
   const res = await fetch(`/api/jokes?page=${pageParam}`);
   return res.json();
 }
@@ -32,6 +30,7 @@ export function JokeList() {
   } = useInfiniteQuery({
     queryKey: ['jokes'],
     queryFn: fetchJokes,
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
   });
 
@@ -41,7 +40,7 @@ export function JokeList() {
     }
   }, [inView, fetchNextPage, hasNextPage]);
 
-  if (status === "loading") {
+  if (status === "pending") {
     return <div className="flex justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   }
 
@@ -49,7 +48,7 @@ export function JokeList() {
     <div className="space-y-4">
       {data?.pages.map((page, i) => (
         <div key={i} className="space-y-4">
-          {page.jokes.map((joke: Joke, index: number) => (
+          {page.jokes.map((joke, index) => (
             <motion.div
               key={joke.id}
               initial={{ opacity: 0, y: 20 }}
