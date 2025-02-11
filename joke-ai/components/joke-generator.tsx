@@ -127,7 +127,7 @@ export function JokeGenerator() {
                 exit={{ opacity: 0, height: 0 }}
                 className="space-y-4"
               >
-                <h2 className="text-xl font-semibold">Who's the audience?</h2>
+                <h2 className="text-xl font-semibold">Who&apos;s the audience?</h2>
                 <div className="grid grid-cols-3 gap-4">
                   {audienceTypes.map((type) => (
                     <AudienceCard
