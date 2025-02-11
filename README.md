@@ -8,13 +8,15 @@ A simple demo project built with Next.js that generates jokes using AI. Built to
 - Server and client components
 - Basic routing
 - TypeScript support
-- Simple in-memory caching
+- Redis-based KeyVaulue temporary persistence with client caching
 
 ## Features
 
 - Generate AI-powered jokes
 - View recently generated jokes
-- No database required - uses in-memory LRU cache
+- Light/Dark Mode
+
+<img width="1728" alt="image" src="https://github.com/user-attachments/assets/b413ae38-86dc-45f3-94ea-b6b999321895" />
 
 ## Getting Started
 
