@@ -3,13 +3,6 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Smile, Coffee, Mic2, Sparkles, Baby, User, UserPlus2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

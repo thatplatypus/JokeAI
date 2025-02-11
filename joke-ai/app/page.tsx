@@ -11,7 +11,7 @@ export default function Home() {
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Generate unique, AI-powered jokes tailored to your preferences. 
-          From dad jokes to puns, we've got your humor covered.
+          From dad jokes to puns, we&apos;ve got your humor covered.
         </p>
       </div>
 
