@@ -9,6 +9,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { JokeTypeCard } from "./joke-type-card";
 import { AudienceCard } from "./audience-card";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
+import type { Joke } from "@/types/joke";
 
 type JokeType = "dad" | "pun" | "knock-knock" | "general";
 type AudienceType = "child" | "teen" | "adult";
@@ -34,6 +37,7 @@ export function JokeGenerator() {
   const [instructions, setInstructions] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [joke, setJoke] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -53,10 +57,31 @@ export function JokeGenerator() {
       if (!response.ok) throw new Error("Failed to generate joke");
       
       const data = await response.json();
+      
+      // Create joke object
+      const joke: Joke = {
+        id: uuidv4(),
+        content: data.joke,
+        type: jokeType!,
+        audience: audience!,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Save to KV store
+      await fetch("/api/jokes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(joke),
+      });
+
+      // Invalidate jokes query to trigger refetch
+      queryClient.invalidateQueries({ queryKey: ["jokes"] });
+      
       setJoke(data.joke);
     } catch (error) {
       console.error("Failed to generate joke:", error);
-      // We'll add proper error handling later
     } finally {
       setIsLoading(false);
     }
