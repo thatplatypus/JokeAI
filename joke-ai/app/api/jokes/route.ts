@@ -1,8 +1,9 @@
 import { kv } from '@vercel/kv';
 import { NextResponse } from "next/server";
+import { Joke } from "@/types/joke";
 
 let jokesCache: {
-  jokes: any[];
+  jokes: Joke[];
   timestamp: number;
 } | null = null;
 
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const jokes = await kv.lrange('jokes', 0, -1); 
+    const jokes = await kv.lrange<Joke>('jokes', 0, -1);
     jokesCache = {
       jokes,
       timestamp: Date.now()
@@ -48,11 +49,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const joke = await request.json();
+  const joke: Joke = await request.json();
   
   try {
     await kv.lpush('jokes', joke);
-
     jokesCache = null;
     return NextResponse.json({ success: true });
   } catch (error) {
