@@ -1,5 +1,7 @@
 # AI Joke Generator
 
+<img width="1711" alt="image" src="https://github.com/user-attachments/assets/75e537fb-899c-4579-ab1d-98284e70c091" />
+
 A simple demo project built with Next.js that generates jokes using AI. Built to demonstrate Next.js 14 features including:
 
 - Server-side API routes with OpenAI integration
