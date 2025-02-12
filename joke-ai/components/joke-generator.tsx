@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Smile, Coffee, Mic2, Sparkles, Baby, User, UserPlus2 } from "lucide-react";
+import { Loader2, Smile, Coffee, Mic2, Sparkles, Baby, User, UserPlus2, Lightbulb, MoonStar, Drama, ChevronDown, LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { JokeTypeCard } from "./joke-type-card";
 import { AudienceCard } from "./audience-card";
@@ -12,9 +12,16 @@ import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import type { Joke } from "@/types/joke";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type JokeType = "dad" | "pun" | "knock-knock" | "general";
 type AudienceType = "child" | "teen" | "adult";
+type PersonalityType = "classic" | "witty" | "dark" | "absurdist";
 
 const jokeTypes = [
   { value: "dad", label: "Dad Joke", icon: Coffee },
@@ -29,6 +36,68 @@ const audienceTypes = [
   { value: "adult", label: "Adults", icon: UserPlus2 },
 ] as const;
 
+const personalities = [
+  { 
+    value: "classic", 
+    label: "Classic", 
+    icon: Lightbulb,
+    tooltip: "Traditional, timeless jokes that everyone can enjoy"
+  },
+  { 
+    value: "witty", 
+    label: "Witty", 
+    icon: Sparkles,
+    tooltip: "Clever wordplay and intelligent humor"
+  },
+  { 
+    value: "dark", 
+    label: "Dark", 
+    icon: MoonStar,
+    tooltip: "Edgy humor with a twist (adults only)"
+  },
+  { 
+    value: "absurdist", 
+    label: "Absurdist", 
+    icon: Drama,
+    tooltip: "Surreal and unexpected humor that breaks conventions"
+  },
+] as const;
+
+interface PersonalityCardProps {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  tooltip: string;
+  selected: boolean;
+  onClick: () => void;
+}
+
+function PersonalityCard({ icon: Icon, label, tooltip, selected, onClick }: PersonalityCardProps) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card
+            className={cn(
+              "relative overflow-hidden cursor-pointer transition-all",
+              "hover:bg-purple-500/10 hover:text-purple-600 dark:hover:bg-purple-500/20",
+              selected && "bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
+            )}
+            onClick={onClick}
+          >
+            <div className="p-4 flex flex-col items-center gap-2 text-center">
+              <Icon className="h-6 w-6" />
+              <span className="text-sm font-medium">{label}</span>
+            </div>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export function JokeGenerator() {
   const [step, setStep] = useState(1);
@@ -38,6 +107,8 @@ export function JokeGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [joke, setJoke] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [personality, setPersonality] = useState<PersonalityType>("classic");
   
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -58,7 +129,6 @@ export function JokeGenerator() {
       
       const data = await response.json();
       
-      // Create joke object
       const joke: Joke = {
         id: uuidv4(),
         content: data.joke,
@@ -67,7 +137,6 @@ export function JokeGenerator() {
         createdAt: new Date().toISOString(),
       };
 
-      // Save to KV store
       await fetch("/api/jokes", {
         method: "POST",
         headers: {
@@ -76,7 +145,6 @@ export function JokeGenerator() {
         body: JSON.stringify(joke),
       });
 
-      // Invalidate jokes query to trigger refetch
       queryClient.invalidateQueries({ queryKey: ["jokes"] });
       
       setJoke(data.joke);
@@ -174,12 +242,7 @@ export function JokeGenerator() {
 
           <AnimatePresence>
             {step >= 3 && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-4"
-              >
+              <motion.div className="space-y-4">
                 <h2 className="text-xl font-semibold">Any specific instructions?</h2>
                 <Textarea
                   placeholder="Optional: Add specific topics, themes, or other instructions..."
@@ -187,7 +250,49 @@ export function JokeGenerator() {
                   onChange={(e) => setInstructions(e.target.value)}
                   className="h-24"
                 />
-                <Button 
+                
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAdvanced(!showAdvanced)}
+                    className="w-full justify-between"
+                  >
+                    Advanced Options
+                    <ChevronDown className={cn(
+                      "h-4 w-4 transition-transform",
+                      showAdvanced && "rotate-180"
+                    )} />
+                  </Button>
+                  
+                  <AnimatePresence>
+                    {showAdvanced && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="space-y-2 pt-2"
+                      >
+                        <label className="text-sm font-medium">Comedian Style:</label>
+                        <div className="grid grid-cols-4 gap-4">
+                          {personalities.map((p) => (
+                            <PersonalityCard
+                              key={p.value}
+                              icon={p.icon}
+                              label={p.label}
+                              value={p.value}
+                              tooltip={p.tooltip}
+                              selected={personality === p.value}
+                              onClick={() => setPersonality(p.value as PersonalityType)}
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                
+                <Button
                   className={cn(
                     "w-full relative overflow-hidden",
                     "bg-gradient-to-r from-purple-500 to-indigo-600",
