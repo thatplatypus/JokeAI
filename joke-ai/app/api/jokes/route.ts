@@ -52,7 +52,8 @@ export async function POST(request: Request) {
   const joke: Joke = await request.json();
   
   try {
-    await kv.lpush('jokes', joke);
+    //ToDo: implement something to replace kv store (local storage instead?)
+    //await kv.lpush('jokes', joke);
     jokesCache = null;
     return NextResponse.json({ success: true });
   } catch (error) {
