@@ -48,10 +48,11 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(_request: Request) {
+export async function POST(request: Request) {
   //const joke: Joke = await request.json();
   
   try {
+    console.log(request.url);
     //ToDo: implement something to replace kv store (local storage instead?)
     //await kv.lpush('jokes', joke);
     jokesCache = null;
