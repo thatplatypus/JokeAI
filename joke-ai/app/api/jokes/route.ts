@@ -48,8 +48,8 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
-  const joke: Joke = await request.json();
+export async function POST(_request: Request) {
+  //const joke: Joke = await request.json();
   
   try {
     //ToDo: implement something to replace kv store (local storage instead?)
